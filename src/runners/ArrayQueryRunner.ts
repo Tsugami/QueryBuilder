@@ -1,11 +1,11 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-shadow */
-import BaseConnection from './BaseQueryRunner';
+import BaseQueryRunner from './BaseQueryRunner';
 import dynamicSort from '../util/DynamicSort';
 
 import { QueryList, RealQuery, LogicalOperator, Operator } from '../types/types';
 
-export default class ArrayConnection<Entity> implements BaseConnection<Entity> {
+export default class ArrayQueryRunner<Entity> implements BaseQueryRunner<Entity> {
   private base: Entity[];
 
   constructor(base: Entity[]) {
@@ -42,7 +42,7 @@ export default class ArrayConnection<Entity> implements BaseConnection<Entity> {
     return entity => {
       for (const andQueries of queries) {
         for (const query of andQueries) {
-          const result = ArrayConnection.runOperator(
+          const result = ArrayQueryRunner.runOperator(
             query.operator,
             entity[query.column],
             query.value
@@ -76,26 +76,26 @@ export default class ArrayConnection<Entity> implements BaseConnection<Entity> {
   }
 
   findMany(query: RealQuery<Entity>): Entity[] {
-    const queryParsed = ArrayConnection.parseQueries(query.query);
-    const filtered = this.base.filter(ArrayConnection.queryCallback<Entity>(queryParsed));
+    const queryParsed = ArrayQueryRunner.parseQueries(query.query);
+    const filtered = this.base.filter(ArrayQueryRunner.queryCallback<Entity>(queryParsed));
     const sorted = query.sort ? filtered.sort(dynamicSort(query.sort)) : filtered;
     if (query.limit && query.offset) {
       return sorted.slice((query.offset - 1) * query.limit, query.offset * query.limit);
     }
     if (query.fields) {
       return sorted.map(entity =>
-        ArrayConnection.parseFields(entity, query.fields as (keyof Entity)[])
+        ArrayQueryRunner.parseFields(entity, query.fields as (keyof Entity)[])
       ) as Entity[];
     }
     return sorted;
   }
 
   findOne(query: RealQuery<Entity>): Entity | undefined {
-    const queryParsed = ArrayConnection.parseQueries(query.query);
-    const result = this.base.find(ArrayConnection.queryCallback<Entity>(queryParsed));
+    const queryParsed = ArrayQueryRunner.parseQueries(query.query);
+    const result = this.base.find(ArrayQueryRunner.queryCallback<Entity>(queryParsed));
     if (!result) return;
     if (query.fields) {
-      return ArrayConnection.parseFields(result, query.fields) as Entity;
+      return ArrayQueryRunner.parseFields(result, query.fields) as Entity;
     }
     return result;
   }
