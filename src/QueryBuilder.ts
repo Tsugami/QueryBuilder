@@ -1,9 +1,9 @@
 /* eslint-disable no-underscore-dangle */
 import { QueryList, LogicalOperator, OrderTypes, Operator, Sort, RealQuery } from './types/types';
-import BaseConnection from './connections/BaseConnection';
+import QueryRunner from './runners/BaseQueryRunner';
 
 export default class QueryBuild<Entity> {
-  public connection: BaseConnection<Entity>;
+  public queryRunner: QueryRunner<Entity>;
 
   private query: QueryList<Entity>;
 
@@ -21,8 +21,8 @@ export default class QueryBuild<Entity> {
 
   private _sort?: Record<keyof Entity, OrderTypes>;
 
-  constructor(connection: BaseConnection<Entity>) {
-    this.connection = connection;
+  constructor(queryRunner: QueryRunner<Entity>) {
+    this.queryRunner = queryRunner;
     this.query = [];
     this.currentLogicalOperator = LogicalOperator.AND;
     this.currentIsNegative = false;
@@ -138,10 +138,10 @@ export default class QueryBuild<Entity> {
   }
 
   getMany(): Promise<Entity[]> | Entity[] {
-    return this.connection.findMany(this.createRealQuery());
+    return this.queryRunner.findMany(this.createRealQuery());
   }
 
   getOne(): Promise<Entity> | Entity | undefined {
-    return this.connection.findOne(this.createRealQuery());
+    return this.queryRunner.findOne(this.createRealQuery());
   }
 }

@@ -18,6 +18,8 @@ module.exports = {
   rules: {
     'prettier/prettier': ['error'],
     'import/extensions': 'off',
+    'consistent-return': 'off',
+    'no-nested-ternary': 'off',
   },
   settings: {
     'import/parsers': {
