@@ -48,9 +48,8 @@ export default class ArrayQueryRunner<Entity> implements BaseQueryRunner<Entity>
             query.value
           );
 
-          if ((query.negative && result) || !result) {
-            return false;
-          }
+          if (query.negative) return !result;
+          return result;
         }
       }
       return true;
