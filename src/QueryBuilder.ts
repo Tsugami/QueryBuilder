@@ -5,7 +5,7 @@ import BaseConnection from './connections/BaseConnection';
 export default class QueryBuild<Entity> {
   public connection: BaseConnection<Entity>;
 
-  public query: QueryList<Entity>;
+  private query: QueryList<Entity>;
 
   private currentColumn?: keyof Entity;
 
@@ -68,7 +68,7 @@ export default class QueryBuild<Entity> {
   }
 
   LessThanOrEqual(num: number): this {
-    this.createQuery(num, Operator.GreaterThanOrEqual);
+    this.createQuery(num, Operator.LessThanOrEqual);
     return this;
   }
 
