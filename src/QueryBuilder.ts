@@ -1,5 +1,5 @@
 /* eslint-disable no-underscore-dangle */
-
+import { QueryList, LogicalOperator, OrderTypes, Operator, Sort, RealQuery } from './types/types';
 import BaseConnection from './connections/BaseConnection';
 
 export default class QueryBuild<Entity> {

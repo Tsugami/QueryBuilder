@@ -1,14 +1,14 @@
 /* eslint-disable no-shadow */
-type OrderTypes = 'ASC' | 'DESC';
+export type OrderTypes = 'ASC' | 'DESC';
 
-type Sort<Entity> = Record<keyof Entity, OrderTypes>;
+export type Sort<Entity> = Record<keyof Entity, OrderTypes>;
 
-enum LogicalOperator {
+export enum LogicalOperator {
   OR,
   AND,
 }
 
-enum Operator {
+export enum Operator {
   Equal,
   GreaterThan,
   LessThan,
@@ -20,7 +20,7 @@ enum Operator {
   IsNull,
 }
 
-interface Query<Column> {
+export interface Query<Column> {
   column: Column;
   negative: boolean;
   operator: Operator;
@@ -28,9 +28,9 @@ interface Query<Column> {
   value: unknown;
 }
 
-type QueryList<Entity> = Query<keyof Entity>[];
+export type QueryList<Entity> = Query<keyof Entity>[];
 
-interface RealQuery<Entity> {
+export interface RealQuery<Entity> {
   query: QueryList<Entity>;
   sort?: Sort<Entity>;
   limit?: number;
