@@ -4,12 +4,42 @@ import BaseQueryRunner from './BaseQueryRunner';
 import dynamicSort from '../util/DynamicSort';
 
 import { QueryList, RealQuery, LogicalOperator, Operator } from '../types/types';
+import QueryBuilder from '../QueryBuilder';
 
 export default class ArrayQueryRunner<Entity> implements BaseQueryRunner<Entity> {
   private base: Entity[];
 
   constructor(base: Entity[]) {
     this.base = base;
+  }
+
+  createQueryBuilder(): QueryBuilder<Entity> {
+    return new QueryBuilder(this);
+  }
+
+  findMany(query: RealQuery<Entity>): Entity[] {
+    const queryParsed = ArrayQueryRunner.parseQueries(query.query);
+    const filtered = this.base.filter(ArrayQueryRunner.queryCallback(queryParsed));
+    const sorted = query.sort ? filtered.sort(dynamicSort(query.sort)) : filtered;
+    if (query.limit && query.offset) {
+      return sorted.slice((query.offset - 1) * query.limit, query.offset * query.limit);
+    }
+    if (query.fields) {
+      return sorted.map(entity =>
+        ArrayQueryRunner.parseFields(entity, query.fields as (keyof Entity)[])
+      ) as Entity[];
+    }
+    return sorted;
+  }
+
+  findOne(query: RealQuery<Entity>): Entity | undefined {
+    const queryParsed = ArrayQueryRunner.parseQueries(query.query);
+    const result = this.base.find(ArrayQueryRunner.queryCallback(queryParsed));
+    if (!result) return;
+    if (query.fields) {
+      return ArrayQueryRunner.parseFields(result, query.fields) as Entity;
+    }
+    return result;
   }
 
   private static runOperator(operator: Operator, column: unknown, value: unknown): boolean {
@@ -72,31 +102,6 @@ export default class ArrayQueryRunner<Entity> implements BaseQueryRunner<Entity>
       },
       [[]]
     );
-  }
-
-  findMany(query: RealQuery<Entity>): Entity[] {
-    const queryParsed = ArrayQueryRunner.parseQueries(query.query);
-    const filtered = this.base.filter(ArrayQueryRunner.queryCallback<Entity>(queryParsed));
-    const sorted = query.sort ? filtered.sort(dynamicSort(query.sort)) : filtered;
-    if (query.limit && query.offset) {
-      return sorted.slice((query.offset - 1) * query.limit, query.offset * query.limit);
-    }
-    if (query.fields) {
-      return sorted.map(entity =>
-        ArrayQueryRunner.parseFields(entity, query.fields as (keyof Entity)[])
-      ) as Entity[];
-    }
-    return sorted;
-  }
-
-  findOne(query: RealQuery<Entity>): Entity | undefined {
-    const queryParsed = ArrayQueryRunner.parseQueries(query.query);
-    const result = this.base.find(ArrayQueryRunner.queryCallback<Entity>(queryParsed));
-    if (!result) return;
-    if (query.fields) {
-      return ArrayQueryRunner.parseFields(result, query.fields) as Entity;
-    }
-    return result;
   }
 
   private static parseFields<Entity>(entity: Entity, fields: (keyof Entity)[]): Partial<Entity> {

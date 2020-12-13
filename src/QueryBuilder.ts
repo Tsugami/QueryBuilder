@@ -2,7 +2,7 @@
 import { QueryList, LogicalOperator, OrderTypes, Operator, Sort, RealQuery } from './types/types';
 import QueryRunner from './runners/BaseQueryRunner';
 
-export default class QueryBuild<Entity> {
+export default class QueryBuilder<Entity> {
   public queryRunner: QueryRunner<Entity>;
 
   private query: QueryList<Entity>;
