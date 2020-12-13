@@ -22,7 +22,7 @@ export enum Operator {
 
 export interface Query<Column> {
   column: Column;
-  negative: boolean;
+  negatived: boolean;
   operator: Operator;
   logicalOperator: LogicalOperator;
   value: unknown;

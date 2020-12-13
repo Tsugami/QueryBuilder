@@ -1,6 +1,6 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-shadow */
-import BaseQueryRunner from './BaseQueryRunner';
+import BaseQueryRunner from '../types/BaseQueryRunner';
 import dynamicSort from '../util/DynamicSort';
 
 import { QueryList, RealQuery, LogicalOperator, Operator } from '../types/types';
@@ -78,7 +78,7 @@ export default class ArrayQueryRunner<Entity> implements BaseQueryRunner<Entity>
             query.value
           );
 
-          if (query.negative) return !result;
+          if (query.negatived) return !result;
           return result;
         }
       }

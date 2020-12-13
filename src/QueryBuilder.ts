@@ -1,6 +1,7 @@
+/* eslint-disable import/no-cycle */
 /* eslint-disable no-underscore-dangle */
 import { QueryList, LogicalOperator, OrderTypes, Operator, Sort, RealQuery } from './types/types';
-import QueryRunner from './runners/BaseQueryRunner';
+import QueryRunner from './types/BaseQueryRunner';
 
 export default class QueryBuilder<Entity> {
   public queryRunner: QueryRunner<Entity>;
@@ -11,7 +12,7 @@ export default class QueryBuilder<Entity> {
 
   private currentLogicalOperator: LogicalOperator;
 
-  private currentIsNegative: boolean;
+  private _not: boolean;
 
   private selectedField?: (keyof Entity)[];
 
@@ -25,7 +26,7 @@ export default class QueryBuilder<Entity> {
     this.queryRunner = queryRunner;
     this.query = [];
     this.currentLogicalOperator = LogicalOperator.AND;
-    this.currentIsNegative = false;
+    this._not = false;
   }
 
   column(column: keyof Entity): this {
@@ -40,7 +41,7 @@ export default class QueryBuilder<Entity> {
 
     this.query.push({
       column: this.currentColumn,
-      negative: this.currentIsNegative,
+      negatived: this._not,
       logicalOperator: this.currentLogicalOperator,
       operator,
       value,
@@ -93,7 +94,7 @@ export default class QueryBuilder<Entity> {
   }
 
   get not(): this {
-    this.currentIsNegative = true;
+    this._not = true;
     return this;
   }
 
